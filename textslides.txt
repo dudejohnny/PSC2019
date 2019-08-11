@@ -1,0 +1,198 @@
+%title: A Fast SIMD-Based Chunking Algorithm
+%author: Johnny Dude
+%date: 27-Aug-2019
+
+
+-> # A Fast SIMD-Based Chunking Algorithm <-
+
+-> Johnny Dude <-
+-> Michael Hirsch <-
+-> Yair Toaff <-
+
+-> @Toga Networks <-
+
+PSC 2019
+
+--------------------------------------------------
+
+
+-> # Outline <-
+
+  - Background
+  - Chunking Problem
+  - Traditional Solutions
+  - Proposed Solution
+  - Future Work
+
+Notes: I will start by covering some background,
+talk about the problem we are facing,
+then show some traditional solutions.
+And then show the proposed solution and talk about future possible work.
+
+--------------------------------------------------
+
+
+-> # Background <-
+
+-> ## Deduplication <-
+
+  - What is deduplication?
+    - Chunk
+    - Hash
+    - Store chunks uniquely.
+
+Notes: Deduplication is basically a compression of large amount of data.
+When we want to store new data in a deduplicated repository,
+the input raw data is being splitted into chunks,
+apply cryptographically strenth hash on each chunk,
+this hash represents the data we want to store,
+and we store in a repository that stores the value of each hash uniquely.
+
+--------------------------------------------------
+
+
+-> # Background <-
+
+-> ## Chunking Methods <-
+
+  - How chunking works?
+    - Simple - fixed size.
+    - Content aware - files.
+    - Content sensetive - rolling hash.
+
+Notes: One significant part of a deduplication engine is the chunking algorithm.
+It can be as simple as fixed size when backing up block devices, or file when backing up file systems.
+Or more robust method like rolling hash, which we will focus on.
+
+--------------------------------------------------
+
+
+-> # Background <-
+
+-> ## CPU Performance of Deduplication <-
+
+In 2017 we worked on a deduplication engine,
+and we tried to improve its performance.
+
+  - Measureing the CPU usage of our system shows:
+    - 2.533 seconds compressing 1GB. (with LZ4)
+    - 1.120 seconds chunking 1GB. (with Buzzhash)
+    - 0.167 seconds for hashing 1GB. (with SHA-1)
+    - 0.150 seconds for everything else 1GB.
+
+Notes: Our work started when we were looking for performance bottlenecks in a deduplication engine we worked on.
+Measureing the most significant CPU consuming parts, we found that our chunking was significantly comre demanding than the hashing.
+When looking at it as engineers it seems odd, since the SHA-1 amount of alegbric computation is insanely larger than the the rolling hash.
+
+--------------------------------------------------
+
+
+-> # Chunking Problem <-
+
+-> ## Chunking Problem <-
+
+Given a stream of bytes, divide it into chunks for deduplication.
+
+  - Output identical segments for identical data
+  - Good segment size distribution.
+  - Good performance.
+  - Apply for any input (photo, DB, text, random, etc...)
+
+--------------------------------------------------
+
+
+-> # Traditional Solutions <-
+
+-> ## Rolling Hash <-
+
+Notes: Explain the idea of splitting chunks by using some weak hash function.
+And explain the benefits of rolling hash vs calculating hash per each window.
+Show example of how it works with visual aids. 
+
+--------------------------------------------------
+
+
+-> # Traditional Solutions <-
+
+-> ## Carp-Rabin <-
+
+Note: Explain Carp-Rabin with mathmatics, and maybe some diagrams.
+
+--------------------------------------------------
+
+
+-> # Traditional Solutions <-
+
+-> ## Cyclic Polynomial <-
+
+  - A redesigned algorithm to work with compatible CPU intrinsics.
+
+Notes: Explain cyclic polinomial with mathmatics, and maybe some diagrams.
+Explaing the reason it works faster is that it uses specific CPU friendly algebra.
+
+--------------------------------------------------
+
+
+-> # Traditional Solutions <-
+
+-> ## The Sequencial Illusion <-
+
+The problem with traditional solutions is that it assumes instructions are executed sequencially.
+
+--------------------------------------------------
+
+
+-> # Solution <-
+
+-> ## What does it do? <-
+
+ 1. Work with rolling vectors.
+ 2. Calculate the creteria, in a way that:
+   - Number of calculation are a constant unrelated to the vertor size.
+   - Can find a cutting points in a byte offset.
+
+Notes: we worked a lot on trying to find a solution.
+And as simple as it may seems once presented, it was far from obvious before.
+One thing we were looking at is a solution that can use vectors for calculations,
+but can magically find cutting points in a byte offset.
+
+--------------------------------------------------
+
+
+-> # Solution <-
+
+-> ## Example <-
+
+Notes: start with showing the solution with visual aids.
+ 1. Work on vectors of a certain size.
+ 2. Calculate hash per byte.
+ 3. Use a creteria function that narrows each hash to boolean result.
+ 4. Cut point is decided when a sequence of pass results are found.
+
+--------------------------------------------------
+
+
+-> # Solution <-
+
+-> ## Proposed Solution <-
+
+Notes: next show the solution with mathmatics.
+
+--------------------------------------------------
+
+
+-> # Future Work <-
+
+  - Find a rolling hash that is backward compatible with smaller vector sizes.
+
+Notes: One problem with software products is that the hardware is improving,
+but there is need for support and backward compatibility for year to come.
+Just like SHA1, 2, and 512, everytime we want to increase the vector size,
+we lose the backward compatibility.
+Is there a way to do a rolling hash which works faster in case of larger vector size,
+but gives the same results?
+
+--------------------------------------------------
+
+
+-> # Thank You <-
