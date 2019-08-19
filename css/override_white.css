@@ -1,0 +1,68 @@
+.reveal {
+  font-size: 48px;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  color: #0060B0;
+  text-transform: none;
+}
+
+.reveal h1 {
+  font-size: 250%;
+}
+
+.reveal h2 {
+  font-size: 180%;
+}
+
+.reveal h3 {
+  font-size: 150%;
+}
+
+.reveal h4 {
+  font-size: 120%;
+}
+
+.reveal pre {
+  max-height: none;
+  max-height: 100%;
+}
+
+.reveal em {
+  font-weight: bold;
+  color: #D07000;
+}
+
+.reveal section img {
+  background:none;
+  border:none;
+  box-shadow:none;
+}
+
+.reveal div.footerleft,
+.reveal div.footerright,
+.reveal div.footermiddle {
+  font-size: 40px;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  color: #804000;
+  width: 100%;
+  position: fixed;
+  bottom: 10px;
+  padding: 0;
+  margin: 0;
+}
+
+.reveal div.footerleft {
+  text-align: left;
+}
+
+.reveal div.footerright {
+  text-align: right;
+}

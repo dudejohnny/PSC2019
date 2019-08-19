@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>How Thinking in Python Made Me a Better c++ Developer - Johnny D.</title>
+    <link rel="stylesheet" href="reveal.js/css/reveal.css">
+    <link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme">
+    <link rel="stylesheet" href="css/override_white.css" id="theme">
+    <link rel="stylesheet" href="css/pygment.css">
+    <!-- Printing and PDF exports -->
+    <script>
+      var link = document.createElement( 'link' );
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = window.location.search.match( /print-pdf/gi ) ? 'reveal.js/css/print/pdf.css' : 'reveal.js/css/print/paper.css';
+      document.getElementsByTagName( 'head' )[0].appendChild( link );
+    </script>
+  </head>
+
+  <body>
+    <div class="reveal">
+      <div class="slides" style="font-size:72px;">
+
+<!----------------------------------------------------------
+  This is the actual presentation,
+  so the heck with keeping the previous indentation!
+  This part is reindented from 0! 
+------------------------------------------------------------>
+<div class="footermiddle">Fast SIMD-Based Chunking Algorithm</div>
+<div class="footerleft">PSC 26-Aug-2019</div>
+<div class="footerright">Johnny Dude</div>
+
+<section>
+  <section>
+    <div>
+      <h1>Fast SIMD-Based Chunking Algorithm</h1>
+    </div>
+    <div>
+      <b>Yehonatan Dude, Michael Hirsch, Yair Toaff</b>
+    </div>
+    <div>
+      <p><img src="img/toganetworks.png"></img></p>
+      <p><h2>PSC 2019</h2></p>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      Hi my name is Johnny Dude.<br/>
+      I would present today the results of<br/>
+      the work Michael Hirsch, Yair Toaff, and I<br/>
+      did in TogaNetworks</br>
+      As a part of overall performance improvement of a deduplication engine.<br/>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Outline</em></h3>
+  <section>
+    <div>
+      <ol>
+        <li>Background</li>
+        <li>Chunking Problem</li>
+        <li>Traditional Solutions</li>
+        <li>Our Solution</li>
+        <li>Future Work</li>
+      </ol>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      I will start by covering some background,<br/>
+      talk about the problem we are facing,<br/>
+      explain how traditional solutions work,<br/>
+      And then show the proposed solution and talk about future possible work.<br/>
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Background - Deduplication</em></h3>
+  <section>
+    <div>
+      <h4>
+        A technique for eliminating<br/>
+        duplicate copies of repeating data.<br/>
+      </h4>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      Unlike compression its intent is to<br/>
+      inspect large volumes of data<br/>
+      and identify large sections.<br/>
+    </aside>
+  </section>
+
+  <section>
+    <h4>Deduplication process in a nutshell</h4>
+    <div>
+      <ol>
+        <li>Divide into chunks</li>
+        <li>Calculate the chunks' hashes</li>
+        <li>Store chunks uniquely</li>
+      </ol>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      When we want to store new data in a deduplicated repository, we..<br/>
+      I will show a simple example to demonstrate how it works.<br/>
+    </aside>
+  </section>
+
+  <section data-background="img/page_13.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      can be of the same user, or different users.<br/>
+      can be of any size - small text file, big video, or an entire file-system.<br/>
+      can be processed in any order or parallel...<br/>
+    </aside>
+  </section>
+
+  <section data-background="img/page_14a.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      So now we divided the input into chunks<br/>
+      Again it can be of any size<br/>
+      Think of the same colors and names as the exact same data, duplicated<br/>
+    </aside>
+  </section>
+
+  <section data-background="img/page_14b.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      Our reposiroty may look like this<br/>
+      We have the data stored or managed uniquely<br/>
+      Some kind of index mapping the chunks' hashes to the actual data location<br/>
+      And some recipe for recovering the data<br/>
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Background - Chunking Methods</em></h3>
+  <section>
+    <h4>How to chunk the input data</h4>
+    <div>
+      <ol>
+        <li>Simple - fixed size.</li>
+        <li>Content aware - files, objects, applications.</li>
+        <li>Content sensitive - rolling hash.</li>
+      </ol>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      One significant part of a deduplication engine is the chunking algorithm.<br/>
+      It can be as simple as fixed size when backing up block devices,<br/>
+      or file when backing up file systems.</br>
+      Or more robust method like rolling hash, which we will focus on.<br/>
+    </aside>
+  </section>
+
+  <section data-background="img/page_01.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_02.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_03.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">byhash</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="n">window_size</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mh">0x1f</span><span class="o">&lt;&lt;</span><span class="mi">120</span><span class="p">:</span> <span class="n">k</span> <span class="o">==</span> <span class="p">(</span><span class="n">h</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">criteria</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">offset</span> <span class="o">-</span> <span class="n">window_size</span> <span class="p">:</span> <span class="n">offset</span><span class="p">])):</span>
+            <span class="k">yield</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Background - Deduplication Performance</em></h3>
+  <section>
+    <div>
+      <p>In 2017 we worked on a deduplication engine,<br/>and we tried to improve its performance.</p>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_16.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <!--section>
+    <div>
+      <p>Measureing the CPU usage of our system shows (GB/seconds):</p>
+      <ol>
+        <li>2.533 compressing with LZ4</li>
+        <li>1.120 chunking with Buzzhash</li>
+        <li>0.167 hashing with SHA-1</li>
+        <li>0.150 everything else</li>
+      </ol>
+    </div>
+  </section-->
+</section>
+
+
+<section>
+  <h3><em>Chunking Problem</em></h3>
+  <section>
+    <div>
+      <p>Given a stream of bytes, divide it into chunks for deduplication.</p>
+      <ol>
+        <li>Output identical chunks for identical data</li>
+        <li>Good chunk size distribution.</li>
+        <li>Good performance.</li>
+        <li>Works for any input (photo, DB, text, random, etc...)</li>
+      </ol>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Traditional Solutions</em></h3>
+  <section>
+    <div>
+      <p>Karp-Rabin</p>
+      <p>Cyclic Polynomial</p>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+Explain the idea of splitting chunks by using some weak hash function.
+And explain the benefits of rolling hash vs calculating hash per each window.
+Show example of how it works with visual aids.
+    </aside>
+  </section>
+
+  <section data-background="img/page_05.svg" data-background-size="60%"> <!-- data-background-transition="slide"-->
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_06.svg" data-background-size="60%"> <!-- data-background-transition="slide"-->
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_07.svg" data-background-size="60%"> <!-- data-background-transition="slide"-->
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section>
+    <div>
+<!--
+$$h_i = \sum_{j=0}^{j=63} p^j x_{i-j} \mod N$$
+$$h_{i+1} = p^{64} x_{i - 64} + p h _i + x_i \mod N$$
+
+$$h_i = \bigoplus_{j=0}^{j=63} \text{rotate}(x_{i-j}, j)$$
+$$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
+-->
+      <table>
+        <tr>
+          <th align="center">Karp-Rabin</th>
+          <th align="center">Cyclic Polynomial</th>
+        </tr>
+        <tr>
+          <td><img src="img/kr01.png"></img></td>
+          <td><img src="img/cp01.png"></img></td>
+        </tr>
+        <tr>
+          <td><img src="img/kr02.png"></img></td>
+          <td><img src="img/cp02.png"></img></td>
+        </tr>
+      </table>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Proposed Solution</em></h3>
+  <section>
+    <div>
+      <p>How does it work:</p>
+      <ol>
+        <li>Work with rolling vectors.</li>
+        <li>
+          Calculate the criteria, in a way that:
+          <ul>
+            <li>Number of calculations are constant<br/>
+                unrelated to the vector size.</li>
+            <li>Can find a cutting point at a byte offset.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_08.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+We can calculate hashes on vectors using SIMD.
+The problem is what to do with those hashes now?
+The size of each hash is too samll,
+And the check of each offset is still per byte.
+    </aside>
+  </section>
+
+  <section data-background="img/page_09.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_17a.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_17b.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_10.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_11.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section data-background="img/page_12.svg" data-background-size="60%">
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Measured Results</em></h3>
+  <section data-background="img/chunk-dist.png" data-background-size="60%">
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section>
+    <div>
+      <table>
+        <tr>
+          <th>Algorithm</th>
+          <th>Random Data</th>
+          <th>Corpus Data</th>
+        </tr>
+        <tr>
+          <td>Karp-Rabin</td>
+          <td>975 MB/s</td>
+          <td>927 MB/s</td>
+        </tr>
+        <tr>
+          <td>Cyclic-Polynomial</td>
+          <td>1675 MB/s</td>
+          <td>1676 MB/s</td>
+        </tr>
+        <tr>
+          <td>Ours</td>
+          <td>6715 MB/s</td>
+          <td>7136 MB/s</td>
+        </tr>
+      </table>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section>
+    <div>
+      <table>
+        <tr>
+          <th>Chunking Alg.</th>
+          <th><em>Dedup Perf.</em></th>
+          <th>LZ4</th>
+          <th>SHA1</th>
+          <th>Other</th>
+          <th>Chunking</th>
+        </tr>
+        <tr>
+          <td>Karp-Rabin</td>
+          <td><em>262 MB/s</em></td>
+          <td>63.9%</td>
+          <td>4.1%</td>
+          <td>3.8%</td>
+          <td>28.1%</td>
+        </tr>
+        <tr>
+          <td>Ours</td>
+          <td><em>345 MB/s</em></td>
+          <td>84.5%</td>
+          <td>5.4%</td>
+          <td>5.1%</td>
+          <td>4.7%</td>
+        </tr>
+      </table>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+
+  <section>
+    <div>
+      <ul>
+        <li>Same Distribution</li>
+        <li>Faster Chunking Performance</li>
+        <li>Faster Overall Performance</li>
+      </ul>
+    </div>
+    <div>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      The SIMD notation exists for more than half a century now<br/>
+      The intrinsics exsists for <b>TWO</b> decades<br/>
+      But even in the past decade no product or group managed to break the CP performance<br/>
+      It takes a minute or two to explain this algorithm<br/>
+      If you are familiar with deduplication chunking<br/>
+      But, it took a while and team work to figure it out<br/>
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <h3><em>Future Work</em></h3>
+  <section>
+    <div>
+      <em>A chunking algorithm that is</em><br/>
+    </div>
+    <div>
+        Backward compatible<br/>
+        Does the same amount of work<br/>
+        The bigger the vector size<br/>
+        the faster it works
+      </em>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+      <ol>
+        <li>A</li>
+        <li>B</li>
+      </ol>
+    </aside>
+  </section>
+</section>
+
+
+<section>
+  <section>
+    <div>
+      <h1>Thanks</h1>
+    </div>
+    <!-- NOTES -->
+    <aside class="notes">
+    </aside>
+  </section>
+</section>
+
+
+<!----------------------------------------------------------
+  presentation end, back to the html part
+------------------------------------------------------------>
+
+      </div>
+    </div>
+
+    <script src="reveal.js/lib/js/head.min.js"></script>
+    <script src="reveal.js/js/reveal.js"></script>
+    <script>
+
+      // More info https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        width: 1920,
+        height: 1080,
+
+        margin: 0.01,
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        transition: 'slide', // none/fade/slide/convex/concave/zoom
+        transitionSpeed: 'slow',
+        backgroundTransition: 'slide', // none/fade/slide/convex/concave/zoom
+
+    notes_pointer: {
+        pointer: {
+            size: 25,  // in pixels (scaled like the rest of reveal.js)
+            color: 'rgba(255, 0, 0, 0.6)',  // something valid for css background-color
+            key: 'A'
+        },
+        notes: {
+            key: 'S'
+        }
+    },
+        // More info https://github.com/hakimel/reveal.js#dependencies
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'reveal.js/plugin/search/search.js', async: true },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true },
+//          { src: 'reveal.js/plugin/notes/notes.js', async: true },
+          { src: 'reveal.js/plugin/notes-pointer/notes-pointer.js', async: true }
+        ]
+      });
+
+    </script>
+  </body>
+</html>
