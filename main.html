@@ -44,11 +44,10 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      Hi my name is Johnny Dude.<br/>
-      I would present today the results of<br/>
-      the work Michael Hirsch, Yair Toaff, and I<br/>
-      did in TogaNetworks</br>
-      As a part of overall performance improvement of a deduplication engine.<br/>
+      <p>Hi, my name is Johnny Dude.</p>
+      <p>I would present today a high performance chunking algorithm.</p>
+      <p>A work Michael Hirsch, Yair Toaff, and I did as a part of overall performance improvement of a deduplication engine in Toga Networks.</p>
+    </aside>
   </section>
 </section>
 
@@ -67,10 +66,10 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      I will start by covering some background,<br/>
-      talk about the problem we are facing,<br/>
-      explain how traditional solutions work,<br/>
-      And then show the proposed solution and talk about future possible work.<br/>
+      <p>I will start by covering some background.</p>
+      <p>I will talk about the problem we are facing.</p>
+      <p>I will explain how traditional solutions work.</p>
+      <p>I will show the proposed solution and talk about future possible work.</p>
     </aside>
   </section>
 </section>
@@ -87,9 +86,9 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      Unlike compression its intent is to<br/>
-      inspect large volumes of data<br/>
-      and identify large sections.<br/>
+      <p>Unlike compression its intent is to
+      inspect large volumes of data
+      and identify large sections.</p>
     </aside>
   </section>
 
@@ -104,8 +103,8 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      When we want to store new data in a deduplicated repository, we..<br/>
-      I will show a simple example to demonstrate how it works.<br/>
+      <p>When we want to store new data in a deduplicated repository, we . . . &lt;slides&gt;</p>
+      <p>I will show a simple example to demonstrate how it works.</p>
     </aside>
   </section>
 
@@ -114,9 +113,9 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      can be of the same user, or different users.<br/>
-      can be of any size - small text file, big video, or an entire file-system.<br/>
-      can be processed in any order or parallel...<br/>
+      <p>It can be of the same user, or different users.</p>
+      <p>It can be of any size - small text file, big video, block device, or an entire file-system.</p>
+      <p>It can be processed in any order or parallel...</p>
     </aside>
   </section>
 
@@ -125,9 +124,9 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      So now we divided the input into chunks<br/>
-      Again it can be of any size<br/>
-      Think of the same colors and names as the exact same data, duplicated<br/>
+      <p>Now we divided the input into chunks.</p>
+      <p>Again, the chunks as well can be of any size.</p>
+      <p>Think of the same colors and names as the exact same duplicated  data.</p>
     </aside>
   </section>
 
@@ -136,10 +135,10 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      Our reposiroty may look like this<br/>
-      We have the data stored or managed uniquely<br/>
-      Some kind of index mapping the chunks' hashes to the actual data location<br/>
-      And some recipe for recovering the data<br/>
+      <p>Our repository may look like this.</p>
+      <p>We have the data stored or managed uniquely.</p>
+      <p>Some kind of index mapping the chunks' hashes to the actual data location.</p>
+      <p>And some recipe for recovering the data.</p>
     </aside>
   </section>
 </section>
@@ -329,13 +328,14 @@ $$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
     <div>
       <p>How does it work:</p>
       <ol>
-        <li>Work with rolling vectors.</li>
+        <li>Work with rolling vectors</li>
+        <li>calculate a hash of byte size</li>
         <li>
           Calculate the criteria, in a way that:
           <ul>
             <li>Number of calculations are constant<br/>
-                unrelated to the vector size.</li>
-            <li>Can find a cutting point at a byte offset.</li>
+                unrelated to the vector size</li>
+            <li>Can find a cutting point at a byte offset</li>
           </ul>
         </li>
       </ol>
