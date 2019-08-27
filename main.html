@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>How Thinking in Python Made Me a Better c++ Developer - Johnny D.</title>
+    <title>Fast SIMD-Based Chunking Algorithm</title>
     <link rel="stylesheet" href="reveal.js/css/reveal.css">
     <link rel="stylesheet" href="reveal.js/css/theme/white.css" id="theme">
     <link rel="stylesheet" href="css/override_white.css" id="theme">
@@ -527,19 +527,9 @@ $$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
           <td>c(n log k) / k</td>
         </tr>
       </table>
-<!--
-      Backward compatible<br/>
-      Does the same amount of work<br/>
-      The bigger the vector size<br/>
-      the faster it works
--->
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      <ol>
-        <li>A</li>
-        <li>B</li>
-      </ol>
     </aside>
   </section>
 </section>
@@ -549,6 +539,7 @@ $$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
   <section>
     <div>
       <h1>Thanks</h1>
+      <p><a href="https://github.com/dudejohnny/PSC2019">https://github.com/dudejohnny/PSC2019</a></p>
     </div>
     <!-- NOTES -->
     <aside class="notes">
