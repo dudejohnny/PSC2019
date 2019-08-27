@@ -27,7 +27,7 @@
   This part is reindented from 0! 
 ------------------------------------------------------------>
 <div class="footermiddle">Fast SIMD-Based Chunking Algorithm</div>
-<div class="footerleft">PSC 26-Aug-2019</div>
+<div class="footerleft">PSC 2019-Aug-27</div>
 <div class="footerright">Johnny Dude</div>
 
 <section>
@@ -44,9 +44,9 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      <p>Hi, my name is Johnny Dude.</p>
-      <p>I would present today a high performance chunking algorithm.</p>
-      <p>A work Michael Hirsch, Yair Toaff, and I did as a part of overall performance improvement of a deduplication engine in Toga Networks.</p>
+      <p>I will present today A work Michael Hirsch, Yair Toaff, and I did in Toga Networks</p>
+      <p>As a part of overall performance improvement of a deduplication engine.</p>
+      <p>Resulted in a new chunking algorithm.</p>
     </aside>
   </section>
 </section>
@@ -64,13 +64,6 @@
         <li>Future Work</li>
       </ol>
     </div>
-    <!-- NOTES -->
-    <aside class="notes">
-      <p>I will start by covering some background.</p>
-      <p>I will talk about the problem we are facing.</p>
-      <p>I will explain how traditional solutions work.</p>
-      <p>I will show the proposed solution and talk about future possible work.</p>
-    </aside>
   </section>
 </section>
 
@@ -80,7 +73,7 @@
   <section>
     <div>
       <h4>
-        A technique for eliminating<br/>
+        Deduplication is a technique for eliminating<br/>
         duplicate copies of repeating data.<br/>
       </h4>
     </div>
@@ -103,8 +96,7 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      <p>When we want to store new data in a deduplicated repository, we . . . &lt;slides&gt;</p>
-      <p>I will show a simple example to demonstrate how it works.</p>
+      <p>We have a repository and we want to store new data.</p>
     </aside>
   </section>
 
@@ -113,20 +105,18 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      <p>It can be of the same user, or different users.</p>
-      <p>It can be of any size - small text file, big video, block device, or an entire file-system.</p>
-      <p>It can be processed in any order or parallel...</p>
+      <p>same user or different users.</p>
+      <p>It can be of any size.</p>
+      <p>It can be processed in any order or parallel.</p>
     </aside>
   </section>
 
   <section data-background="img/page_14a.svg" data-background-size="60%">
     <div>
     </div>
-    <!-- NOTES -->
     <aside class="notes">
-      <p>Now we divided the input into chunks.</p>
       <p>Again, the chunks as well can be of any size.</p>
-      <p>Think of the same colors and names as the exact same duplicated  data.</p>
+      <p>Same color means same data</p>
     </aside>
   </section>
 
@@ -136,9 +126,9 @@
     <!-- NOTES -->
     <aside class="notes">
       <p>Our repository may look like this.</p>
-      <p>We have the data stored or managed uniquely.</p>
-      <p>Some kind of index mapping the chunks' hashes to the actual data location.</p>
-      <p>And some recipe for recovering the data.</p>
+      <p>Chunked stored or managed uniquely.</p>
+      <p>Some kind of index of hashes.</p>
+      <p>And some recipea for recovering the data.</p>
     </aside>
   </section>
 </section>
@@ -157,10 +147,9 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
-      One significant part of a deduplication engine is the chunking algorithm.<br/>
-      It can be as simple as fixed size when backing up block devices,<br/>
-      or file when backing up file systems.</br>
-      Or more robust method like rolling hash, which we will focus on.<br/>
+      <p>The main reasons for using a simple approach is lack of resources.</p>
+      <p>This should be applied to large data.</p>
+      <p>But it doesn't fit the slide so I am going to show a miniature example.</p>
     </aside>
   </section>
 
@@ -187,16 +176,6 @@
     <aside class="notes">
     </aside>
   </section>
-
-  <section>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">byhash</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-    <span class="n">window_size</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="n">criteria</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mh">0x1f</span><span class="o">&lt;&lt;</span><span class="mi">120</span><span class="p">:</span> <span class="n">k</span> <span class="o">==</span> <span class="p">(</span><span class="n">h</span> <span class="o">&amp;</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">criteria</span><span class="p">(</span><span class="nb">hash</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="n">offset</span> <span class="o">-</span> <span class="n">window_size</span> <span class="p">:</span> <span class="n">offset</span><span class="p">])):</span>
-            <span class="k">yield</span> <span class="n">offset</span> <span class="o">+</span> <span class="mi">1</span>
-</pre></div>
-  </section>
 </section>
 
 
@@ -216,6 +195,8 @@
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>The chunking part is Karp-Rabin, which is clearly bottleneck.</p>
+      <p>Compared to SHA-1 which requires more algebric work, it is very costy in CPU time</p>
     </aside>
   </section>
 
@@ -280,6 +261,8 @@ Show example of how it works with visual aids.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>Computer CPU gives a <b>sequencial illusion</b></p>
+      <p>When you have a condition it either predicts or caompute both branches</p>
     </aside>
   </section>
 
@@ -288,6 +271,8 @@ Show example of how it works with visual aids.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>CPU friendly intrinsics</p>
+      <p>back a slide</p>
     </aside>
   </section>
 
@@ -326,10 +311,10 @@ $$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
   <h3><em>Proposed Solution</em></h3>
   <section>
     <div>
-      <p>How does it work:</p>
+      <p><h4>How does it work:</h4></p>
       <ol>
         <li>Work with rolling vectors</li>
-        <li>calculate a hash of byte size</li>
+        <li>Calculate a hash of byte size</li>
         <li>
           Calculate the criteria, in a way that:
           <ul>
@@ -350,10 +335,8 @@ $$h_{i+1} = x_{i - 64} + \text{rotate}(h _i, 1) + x_i$$
     </div>
     <!-- NOTES -->
     <aside class="notes">
-We can calculate hashes on vectors using SIMD.
-The problem is what to do with those hashes now?
-The size of each hash is too samll,
-And the check of each offset is still per byte.
+      <p>Notice the SIMD, and what it means</p>
+      <p>We used regular CP</p>
     </aside>
   </section>
 
@@ -362,6 +345,9 @@ And the check of each offset is still per byte.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>Vector in, vector out</p>
+      <p>Cast the input into 16-bit vectors, not good</p>
+      <p>If per character, not good</p>
     </aside>
   </section>
 
@@ -370,6 +356,8 @@ And the check of each offset is still per byte.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>The size of each hash is too samll.</p>
+      <p>If we check of each offset is still per byte.</p>
     </aside>
   </section>
 
@@ -402,6 +390,8 @@ And the check of each offset is still per byte.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>soul of the algorithm.</p>
+      <p>
     </aside>
   </section>
 </section>
@@ -476,6 +466,8 @@ And the check of each offset is still per byte.
     </div>
     <!-- NOTES -->
     <aside class="notes">
+      <p>Notice how the chunking part shrinks.</p>
+      <p>In many cases it makes fixed size solution less relevant.</p>
     </aside>
   </section>
 
@@ -509,11 +501,38 @@ And the check of each offset is still per byte.
       <em>A chunking algorithm that is</em><br/>
     </div>
     <div>
-        Backward compatible<br/>
-        Does the same amount of work<br/>
-        The bigger the vector size<br/>
-        the faster it works
-      </em>
+      <table>
+        <tr>
+          <th>*</th>
+          <th>Past</th>
+          <th>Presented</th>
+          <th>Future</th>
+        </tr>
+        <tr>
+          <th>Backward Compatible</th>
+          <td> N/A </td>
+          <td>f(k, x) &ne; f(l, x)</td>
+          <td>f(k, x) = f(l, x)</td>
+        </tr>
+        <tr>
+          <th>Work</th>
+          <td>cn</td>
+          <td>cn</td>
+          <td>cn</td>
+        </tr>
+        <tr>
+          <th>Speed</th>
+          <td>cn</td>
+          <td>c(n log k) / k</td>
+          <td>c(n log k) / k</td>
+        </tr>
+      </table>
+<!--
+      Backward compatible<br/>
+      Does the same amount of work<br/>
+      The bigger the vector size<br/>
+      the faster it works
+-->
     </div>
     <!-- NOTES -->
     <aside class="notes">
